@@ -1,5 +1,7 @@
 package main
 
-main :: proc() {
+import "aoc_1"
 
+main :: proc() {
+    aoc_1.main()
 }
