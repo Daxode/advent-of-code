@@ -42,3 +42,17 @@ main_p2 :: proc(){
 
     fmt.println(score)
 }
+
+main_p2_v2 :: proc(){
+    input := string(#load("input.txt"))
+    score: u32 = 0
+    for line in strings.split_lines_iterator(&input) {
+        them := line[0]-'A'
+        game_state := line[2]-'X'
+        offset := (game_state+2)%3
+        score += u32(game_state*3)
+        score += u32(((them+offset)%3)+1)
+    }
+
+    fmt.println(score)
+}
