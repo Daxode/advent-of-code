@@ -8,5 +8,10 @@ import "aoc_5"
 import "aoc_6"
 
 main :: proc() {
-    aoc_6.main()
+    // aoc_1.main()
+    // aoc_2.main()
+    // aoc_3.main()
+    // aoc_4.main()
+    // aoc_5.main()
+    // aoc_6.main()
 }
