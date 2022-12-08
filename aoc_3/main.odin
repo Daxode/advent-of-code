@@ -5,7 +5,10 @@ import "core:fmt"
 import "core:bytes"
 
 main :: proc(){
+    fmt.println("Day 3")
+    main_p1()
     main_p2()
+    fmt.println()
 }
 
 main_p1 :: proc(){

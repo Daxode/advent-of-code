@@ -6,7 +6,10 @@ import "core:strconv"
 import "core:math"
 
 main :: proc(){
+    fmt.println("Day 1")
+    main_p1()
     main_p2()
+    fmt.println()
 }
 
 main_p1 :: proc(){

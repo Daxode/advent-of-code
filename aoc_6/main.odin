@@ -6,7 +6,10 @@ import "core:slice"
 import "core:mem"
 
 main :: proc(){
+    fmt.println("Day 6")
+    main_p1_v2()
     main_p2()
+    fmt.println()
 }
 
 main_p1 :: proc(){

@@ -5,7 +5,10 @@ import "core:strings"
 import "core:strconv"
 
 main :: proc(){
+    fmt.println("Day 4")
+    main_p1()
     main_p2()
+    fmt.println()
 }
 
 main_p1 :: proc(){

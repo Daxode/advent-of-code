@@ -4,7 +4,10 @@ import "core:strings"
 import "core:fmt"
 
 main :: proc(){
-    main_p2()
+    fmt.println("Day 2")
+    main_p1()
+    main_p2_v2()
+    fmt.println()
 }
 
 main_p1 :: proc(){
