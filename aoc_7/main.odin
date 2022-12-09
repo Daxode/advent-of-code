@@ -3,6 +3,8 @@ package aoc_7
 import "core:fmt"
 import "core:strings"
 import "core:strconv"
+import "core:slice"
+import "core:text/edit"
 
 main :: proc() {
     main_p1()
@@ -23,20 +25,32 @@ main_p1 :: proc() {
         if line[0] == '$' {
             if is_ls {
                 current_path_index := len(path)-1
-                if current_path_index>last_path_index { // stepped in
-                    sum[current_path_index]=current_dir_size
-                    until_out=0
-                } else if current_path_index<last_path_index { // went back out
-                    sum[current_path_index]+=until_out
-                    if current_dir_size <= AT_MOST {
-                        result += current_dir_size
+
+                if last_path_index > current_path_index {
+                    it := sum[current_path_index:last_path_index+1]
+                    for elem in &it {
+                        if elem <= AT_MOST {
+                            result += elem
+                        }
+                        elem = 0
                     }
-                } else {
-                    sum[current_path_index]=current_dir_size
-                    until_out+=current_dir_size
+                    fmt.println(sum)
+                } else if last_path_index == current_path_index {
+                    if sum[current_path_index] <= AT_MOST {
+                        result += sum[current_path_index]
+                    }
                 }
 
-                fmt.println(sum, current_dir_size, strings.join(path[1:],"/"))                
+                it := sum[:current_path_index]
+                for elem in &it {
+                    elem += current_dir_size
+                }
+                sum[current_path_index] = current_dir_size
+
+                fmt.println(strings.join(path[:],"/"))
+                fmt.println(sum, current_dir_size)
+                fmt.println()
+
                 is_ls = false
                 current_dir_size = 0
                 last_path_index = current_path_index
@@ -60,6 +74,14 @@ main_p1 :: proc() {
                 current_dir_size += strconv.atoi(size_string)
             }
         }
+    }
+
+    if current_dir_size <= AT_MOST {
+        result+=current_dir_size
+    }
+    it := sum[:len(path)-1]
+    for elem in &it {
+        elem += current_dir_size
     }
 
     fmt.println(result)
