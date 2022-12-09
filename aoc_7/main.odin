@@ -8,17 +8,38 @@ main :: proc() {
     main_p1()
 }
 
+AT_MOST :: 100000
+
 main_p1 :: proc() {
     input := string(#load("input.txt"))
     is_ls := false
     current_dir_size := 0
     path: [dynamic]string
+    sum: [20]int
+    result:=0
+    last_path_index := 0
+    until_out:=0
     for line in strings.split_lines_iterator(&input) {
         if line[0] == '$' {
             if is_ls {
-                fmt.println("folder size:",current_dir_size)
+                current_path_index := len(path)-1
+                if current_path_index>last_path_index { // stepped in
+                    sum[current_path_index]=current_dir_size
+                    until_out=0
+                } else if current_path_index<last_path_index { // went back out
+                    sum[current_path_index]+=until_out
+                    if current_dir_size <= AT_MOST {
+                        result += current_dir_size
+                    }
+                } else {
+                    sum[current_path_index]=current_dir_size
+                    until_out+=current_dir_size
+                }
+
+                fmt.println(sum, current_dir_size, strings.join(path[1:],"/"))                
                 is_ls = false
                 current_dir_size = 0
+                last_path_index = current_path_index
             }
 
             switch line[2:4] {
@@ -30,7 +51,6 @@ main_p1 :: proc() {
                             resize(&path, len(path)-1)
                         case:
                             append(&path, line[5:])
-                            fmt.println(path)
                     }
             }
         } else {
@@ -41,4 +61,6 @@ main_p1 :: proc() {
             }
         }
     }
+
+    fmt.println(result)
 }
