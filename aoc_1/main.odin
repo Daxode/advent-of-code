@@ -39,15 +39,11 @@ main_p2 :: proc(){
            max_sum[2] = sum >= max_sum[0] || sum >= max_sum[1] || sum >= max_sum[2] ? sum : max_sum[2]
 
            if (max_sum[2] > max_sum[1]){
-               temp := max_sum[2]
-               max_sum[2] = max_sum[1]
-               max_sum[1] = temp
+               max_sum[2], max_sum[1] = max_sum[1], max_sum[2]
            }
 
            if (max_sum[1] > max_sum[0]){
-                temp := max_sum[1]
-                max_sum[1] = max_sum[0]
-                max_sum[0] = temp
+                max_sum[0], max_sum[1] = max_sum[1], max_sum[0]
             }
 
             sum=0
