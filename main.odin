@@ -8,6 +8,7 @@ import "aoc_5"
 import "aoc_6"
 import "aoc_7"
 import "aoc_8"
+import "aoc_9"
 
 main :: proc() {
     // aoc_1.main()
@@ -17,5 +18,6 @@ main :: proc() {
     // aoc_5.main()
     // aoc_6.main()
     // aoc_7.main()
-    aoc_8.main()
+    // aoc_8.main()
+    aoc_9.main()
 }
