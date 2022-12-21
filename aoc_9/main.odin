@@ -11,9 +11,10 @@ import "core:sys/windows"
 import "core:thread"
 
 main :: proc() {
+    fmt.println("Day 9")
     main_p1()
-    main_p1_v2()
     main_p2()
+    fmt.println()
 }
 
 main_p1 :: proc(){
