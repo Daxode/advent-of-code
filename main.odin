@@ -1,14 +1,15 @@
 package main
 
-import "aoc_1"
-import "aoc_2"
-import "aoc_3"
-import "aoc_4"
-import "aoc_5"
-import "aoc_6"
-import "aoc_7"
-import "aoc_8"
-import "aoc_9"
+// import "aoc_1"
+// import "aoc_2"
+// import "aoc_3"
+// import "aoc_4"
+// import "aoc_5"
+// import "aoc_6"
+// import "aoc_7"
+// import "aoc_8"
+// import "aoc_9"
+import "snek_the_gayme"
 
 main :: proc() {
     // aoc_1.main()
@@ -19,5 +20,6 @@ main :: proc() {
     // aoc_6.main()
     // aoc_7.main()
     // aoc_8.main()
-    aoc_9.main()
+    //aoc_9.main()
+    snek_the_gayme.main()
 }

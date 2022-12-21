@@ -13,9 +13,18 @@
             }
         },
         {
-            "label": "Build Release",
+            "label": "Build Release (console)",
             "type": "shell",
             "command": "odin build . -subsystem:console -out:out/release.exe -o:minimal",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "Build Release (window)",
+            "type": "shell",
+            "command": "odin build . -subsystem:window -out:out/release.exe -o:minimal",
             "group": {
                 "kind": "build",
                 "isDefault": false
