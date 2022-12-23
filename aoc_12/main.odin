@@ -221,8 +221,6 @@ main_p2 :: proc() {
     
     lowest := max(int)
     for start_point in start {
-        priority_queue.clear(&open)
-        clear(&nodes)
         nodes[start_point] = Node{index_camefrom = -1, g_score = 0, f_score = h(start_point)}
         priority_queue.push(&open, start_point)
         
