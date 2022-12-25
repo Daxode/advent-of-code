@@ -134,20 +134,11 @@ main_p2_viz :: proc() {
     input := string(#load("small.txt"))
     voxels, _ := bit_array.create(32*32*32-1)
     flood_fill, _ := bit_array.create(32*32*32-1)
-    for line in strings.split_lines_iterator(&input) {
-        line_it := line
-        i_a, _ := strings.split_by_byte_iterator(&line_it, ',')
-        j_a, _ := strings.split_by_byte_iterator(&line_it, ',')
-        k_a := line_it
-        i := strconv.atoi(i_a)
-        j := strconv.atoi(j_a)
-        k := strconv.atoi(k_a)
-        index := i*32*32 + j*32 + k
-        bit_array.set(voxels, index)
-    }
+    sum := 0
+    stack := make([dynamic]int, 0, 32*32*32)
     
-    Data :: struct {voxels, flood_fill: bit_array.Bit_Array, dirs: [6]int}
-    data := Data{voxels^, flood_fill^, {}}
+    Data :: struct {voxels, flood_fill: bit_array.Bit_Array, dirs: [6]int, sum: ^int, stack: [dynamic]int}
+    data := Data{voxels^, flood_fill^, {}, &sum, stack}
     thread.create_and_start_with_poly_data(&data, proc(data: ^Data) {
         rl.InitWindow(2048, 2048, "Advent of Code 2022 - Day 18")
         rl.SetTargetFPS(60)
@@ -160,13 +151,7 @@ main_p2_viz :: proc() {
             rl.ClearBackground(rl.BLACK)
             rl.BeginMode3D(cam)
             
-            // for i in 0..<6 {
-            //     index := data.dirs[i]
-            //     point := rl.Vector3{f32(index / 32 / 32), f32(index / 32 % 32), f32(index % 32)}
-            //     point -= 10
-            //     rl.DrawCubeWires(point, 1, 1, 1, rl.GREEN)
-            // }
-
+            // draw voxels
             voxel_iter := bit_array.make_iterator(&data.voxels)
             for voxel, index in bit_array.iterate_by_all(&voxel_iter) {
                 point := rl.Vector3{f32(index / 32 / 32), f32(index / 32 % 32), f32(index % 32)}
@@ -176,6 +161,7 @@ main_p2_viz :: proc() {
                 }
             }
 
+            // draw flood fill
             flood_iter := bit_array.make_iterator(&data.flood_fill)
             for voxel, index in bit_array.iterate_by_all(&flood_iter) {
                 point := rl.Vector3{f32(index / 32 / 32), f32(index / 32 % 32), f32(index % 32)}
@@ -185,22 +171,55 @@ main_p2_viz :: proc() {
                 }
             }
 
-            rl.EndMode3D()
-            rl.EndDrawing()
+            // draw stack
+            for index in data.stack {
+                point := rl.Vector3{f32(index / 32 / 32), f32(index / 32 % 32), f32(index % 32)}
+                point -= 16
+                rl.DrawCubeWires(point, 1, 1, 1, rl.BLUE)
+            }
 
+            // draw directions
+            for i in 0..<6 {
+                index := data.dirs[i]
+                point := rl.Vector3{f32(index / 32 / 32), f32(index / 32 % 32), f32(index % 32)}
+                point -= 16
+                rl.DrawCubeWires(point, 1, 1, 1, rl.PURPLE)
+            }
+            
+            rl.EndMode3D()
+
+            rl.DrawText("Sum: ", 10, 10, 20, rl.WHITE)
+            temp: [32]byte
+            text := strconv.itoa(temp[:], data.sum^)
+            rl.DrawText(strings.clone_to_cstring(text), 60, 10, 20, rl.WHITE)
+            rl.EndDrawing()
         }
         rl.CloseWindow()
     })
 
     windows.Sleep(1000)
 
-    fill :: proc(index: int, flood_fill, voxels: ^bit_array.Bit_Array, sides: ^int) {
+    for line in strings.split_lines_iterator(&input) {
+        line_it := line
+        i_a, _ := strings.split_by_byte_iterator(&line_it, ',')
+        j_a, _ := strings.split_by_byte_iterator(&line_it, ',')
+        k_a := line_it
+        i := strconv.atoi(i_a)
+        j := strconv.atoi(j_a)
+        k := strconv.atoi(k_a)
+        index := i*32*32 + j*32 + k
+        bit_array.set(voxels, index)
+        // windows.Sleep(1)
+    }
+
+    append(&stack, 0)
+    bit_array.set(flood_fill, 0)
+    
+    for len(stack) > 0 {
+        index := pop(&stack)
+        // sum = index
         windows.Sleep(1)
-        already_checked, _ := bit_array.get(flood_fill, index)
-        if already_checked {return}
-        bit_array.set(flood_fill, index)
-        
-        voxel_present, _ := bit_array.get(voxels, index)
+
         dirs := [6]int{
             index + 32*32,
             index - 32*32,
@@ -209,21 +228,27 @@ main_p2_viz :: proc() {
             index + 1,
             index - 1,
         }
+
+        data.dirs = dirs
+
+        voxel_present, _ := bit_array.get(voxels, index)
         for dir in dirs {
+            // check for valid direction
+            if dir < 0 || dir >= 32*32*32 {continue}
+
             if voxel_present {
                 dir_present, _ := bit_array.get(voxels, dir)
-                if !dir_present {
-                    sides^ += 1
+                if !dir_present {sum+=1}
+            } else {
+                flood_dir_present, _:= bit_array.get(flood_fill, dir)
+                if !flood_dir_present {
+                    bit_array.set(flood_fill, dir)
+                    append(&stack, dir)
                 }
-            } else if dir >= 0 && dir < 32*32*32 {
-                fill(dir, flood_fill, voxels, sides)
             }
         }
     }
-
-    sides := 0
-    fill(0, flood_fill, voxels, &sides)
-    fmt.println(sides)
+    fmt.println(sum)
 
     for {windows.Sleep(100)}
 }
