@@ -32,10 +32,10 @@ main :: proc() {
     // aoc_10.main()
     // aoc_11.main()
     // aoc_12.main()
-    // aoc_13.main()
+    aoc_13.main()
     // aoc_14.main()
     // aoc_15.main()
     // aoc_16.main()
     // aoc_17.main()
-    aoc_18.main()
+    // aoc_18.main()
 }
