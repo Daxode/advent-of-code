@@ -4,12 +4,13 @@ import "core:fmt"
 import "core:strings"
 import "core:strconv"
 import "core:runtime"
+import "core:math"
 main :: proc() {
     main_p1()
 }
 
 main_p1 :: proc() {
-    input := string(#load("small.txt"))
+    input := string(#load("original.txt"))
 
     consume_number :: proc(line: ^string, should_eat: bool) -> (number: int, success: bool) {
         number_count: int
@@ -33,7 +34,7 @@ main_p1 :: proc() {
                       indenting_down: ^int,
                       indent_a: int,
                       number_a: int,
-                      line_a: string) -> (success: bool) {
+                      line_a: string) -> (success: Maybe(bool)) {
         eat_b: for len(line_b) > 0 {
             if number_a == -1 {
                 if indenting_down^ > 0 {
@@ -56,14 +57,17 @@ main_p1 :: proc() {
 
                     if indent_b^ != indent_a {
                         fmt.println("FailedD", indent_b^, indent_a)
+                        fmt.println(false)
                         return false
                     } 
                     if element_indexes_a[indent_a] != element_indexes_b[indent_b^] {
                         fmt.println("FailedC", element_indexes_a[indent_a], element_indexes_b[indent_b^])
+                        fmt.println(false)
                         return false
                     }
 
                     fmt.println("PassedA")
+                    break eat_b
                 case ',':
                     line_b^ = line_b[1:]
                 case:
@@ -76,37 +80,48 @@ main_p1 :: proc() {
                     }
                     if indent_to_compare != indent_a {
                         fmt.println("FailedA",indent_to_compare, indent_a)
+                        fmt.println(false)
                         return false
                     } 
                     element_indexes_b^[indent_to_compare] += 1
                     if element_indexes_a[indent_a] > element_indexes_b[indent_to_compare] {
                         fmt.println("FailedE", element_indexes_a[indent_a], element_indexes_b[indent_to_compare])
+                        fmt.println(false)
                         return false
                     }
-                    
+
                     number_b, found_number_b := consume_number(line_b, true)
                     if number_a <= number_b {
                         indenting_down^ = indent_a-indent_b^
                         fmt.println("PassedB", indenting_down^, indent_a, indent_b^)
+                        if number_a < number_b {
+                            fmt.println(true)
+                            return true
+                        }
                         break eat_b
                     } else {
                         fmt.println("FailedB", number_a, number_b)
+                        fmt.println(false)
                         return false
                     }
             }
         }
 
-        return true
+        return {}
     }
 
-    index:= 0
+    index:= 1
+    passed := make([dynamic]int, 0 ,1000)
     go_to_next_line: for line_a_l in strings.split_lines_iterator(&input) {
+        defer index += 1
         line_a := line_a_l
         line_b, _ := strings.split_lines_iterator(&input)
         strings.split_lines_iterator(&input)
         fmt.println()
         fmt.println("Current index:", index)
-        index += 1
+        fmt.println("Line A:", line_a)
+        fmt.println("Line B:", line_b)
+        fmt.println("----------------")
         
         element_indexes_a: [100]int
         indent_a := 0
@@ -114,13 +129,16 @@ main_p1 :: proc() {
         indent_b := 0
         indenting_down := 0
         for len(line_a) > 0 {
-            char_a := line_a[0]
-            switch char_a {
+            switch line_a[0] {
                 case '[':
                     line_a = line_a[1:]
                     indent_a += 1
                 case ']':
-                    if !consume_b(&line_b, &indent_b, &element_indexes_b, &element_indexes_a, &indenting_down, indent_a, -1, line_a) {
+                    answer := consume_b(&line_b, &indent_b, &element_indexes_b, &element_indexes_a, &indenting_down, indent_a, -1, line_a)
+                    if answer != {} {
+                        if answer.? {
+                            append(&passed, index)
+                        }
                         continue go_to_next_line
                     }
 
@@ -134,12 +152,24 @@ main_p1 :: proc() {
                     line_a = line_a[1:]
                 case:
                     // Consume number
+                    debug_line_a := line_a
                     number_a, _ := consume_number(&line_a, true)
                     element_indexes_a[indent_a] += 1
-                    if !consume_b(&line_b, &indent_b, &element_indexes_b, &element_indexes_a, &indenting_down, indent_a, number_a, line_a) {
+                    answer := consume_b(&line_b, &indent_b, &element_indexes_b, &element_indexes_a, &indenting_down, indent_a, number_a, debug_line_a)
+                    if answer != {} {
+                        if answer.? {
+                            append(&passed, index)
+                        }
                         continue go_to_next_line
                     }
             }
         }
+
+        append(&passed, index)
     }
+
+    fmt.println()
+    fmt.println("=====================================")
+    fmt.println("Passed:", passed)
+    fmt.println("Sum", math.sum(passed[:]))
 }
