@@ -13,7 +13,7 @@ part1 :: proc() {
     line_iter := &input_str
     left_col := make([dynamic]i32)
     right_col := make([dynamic]i32)
-    for line in strings.split_lines_after_iterator(line_iter) {
+    for line in strings.split_lines_iterator(line_iter) {
         line_cpy := line
         line_split_iter := &line_cpy
         left, _ := strings.split_by_byte_iterator(line_split_iter, ' ')
@@ -40,7 +40,7 @@ part2 :: proc() {
     left_col := make([dynamic]i32)
     right_col := make([dynamic]i32)
 
-    for line in strings.split_lines_after_iterator(line_iter) {
+    for line in strings.split_lines_iterator(line_iter) {
         line_cpy := line
         line_split_iter := &line_cpy
         left, _ := strings.split_by_byte_iterator(line_split_iter, ' ')
